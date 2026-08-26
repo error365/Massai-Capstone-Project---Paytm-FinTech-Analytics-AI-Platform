@@ -4,12 +4,13 @@ Part A — Excel/Sheets merchant workbook
 
 Open ledger.csv and merchants.csv in Excel/Google Sheets. Build a workbook merchant_workbook.xlsx with:
 <span style="color: green;">
-- Create merchant_workbook.xlsx and created below sheets inside this file
+- Created merchant_workbook.xlsx and created below sheets inside this file
 - Created transactions sheet and copied ledger.csv content here
 - Created merchants sheet and copied merchants.csv content here
 </span>
 
 I. A VLOOKUP (fixed range with $ absolute references) that pulls each transaction's merchant_name, category, and region from the merchants sheet into a transactions-view sheet, using IFERROR/IFNA to show "Merchant not found" for any unmatched merchant_id.
+
 <span style="color: green;">
 Step 1 - Create three column in transactions sheet - merchant_name, category, region
 Step 2 - Write the VLOOKUP Formulas as below for all three
@@ -19,6 +20,7 @@ Step 2 - Write the VLOOKUP Formulas as below for all three
 </span>
 
 II. An HLOOKUP demonstration on a small horizontally-laid-out reference table you add (e.g., a one-row-per-payment-method fee-tier lookup: UPI/Wallet/Card/Netbanking with their MDR-style fee percentages of your choosing, stated in the workbook).
+
 <span style="color: green;">
  Step 1: Build the Horizontal Fee Table - created sheet name fee_structure
  Step 2 created Table headers as UPI, Wallet, Card and Netbanking 
@@ -31,6 +33,7 @@ II. An HLOOKUP demonstration on a small horizontally-laid-out reference table yo
 
 
 III. A nested IF/AND classification column labeling each transaction "High-Value Merchant Day" when a merchant's daily transaction total (via a pivot table) exceeds INR 5,000 and its region is not "East", using distinct, documented cutoffs if you choose a different rule — state your exact rule in the workbook.
+
 <span style="color: green;">
 Step 1 - In transaction sheet added one more column name - txn_date, added the formula to convert transaction time to a date =INT(D2) 
 Step 2 - format the Date (YYYY-MM-DD).
@@ -48,6 +51,7 @@ Step 8 - Use below formula to find Wheter the transaction is standard or High va
 
 
 IV. A pivot table summarizing total amount_inr and count of transactions by merchant_id and status, plus a count-vs-count-unique comparison (unique days transacted vs. total transaction count) for at least 5 merchants.
+
 <span style="color: green;">
 Step 1 - Select the transaction table and insert a new Pivot table and create a new sheet named merchant_pivot_summary
 Step 2 - add row as merchant_id
