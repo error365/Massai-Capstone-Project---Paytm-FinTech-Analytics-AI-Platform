@@ -1,124 +1,84 @@
-Part 1 — Payments & Fraud Analytics (/payments_fraud_analytics)
+# Paytm FinTech Analytics & AI Platform — Capstone Project
 
-Part A — Excel/Sheets merchant workbook
+This repository contains the end-to-end implementation for the **Paytm FinTech Analytics & AI Platform Capstone Project**, covering payment fraud analytics, credit risk machine learning, and AI-assisted wealth advisory with blockchain risk governance.
 
-Open ledger.csv and merchants.csv in Excel/Google Sheets. Build a workbook merchant_workbook.xlsx with:
-<span style="color: green;">
-- Created merchant_workbook.xlsx and created below sheets inside this file
-- Created transactions sheet and copied ledger.csv content here
-- Created merchants sheet and copied merchants.csv content here
-</span>
+---
 
-I. A VLOOKUP (fixed range with $ absolute references) that pulls each transaction's merchant_name, category, and region from the merchants sheet into a transactions-view sheet, using IFERROR/IFNA to show "Merchant not found" for any unmatched merchant_id.
+## 🛠️ Repository Structure & Setup
 
-<span style="color: green;">
-Step 1 - Create three column in transactions sheet - merchant_name, category, region
-Step 2 - Write the VLOOKUP Formulas as below for all three
-1. =IFERROR(VLOOKUP(C2, merchants!$A$2:$D$41, 2, FALSE), "Merchant not found") - Merchant name column
-2. =IFERROR(VLOOKUP(C2, merchants!$A$2:$D$41, 3, FALSE), "Merchant not found") - Category
-3. =IFERROR(VLOOKUP(C2, merchants!$A$2:$D$41, 4, FALSE), "Merchant not found") - Region
-</span>
+Project dependencies can be installed using either directory-specific `requirements.txt` files or a single consolidated root `requirements.txt`.
 
-II. An HLOOKUP demonstration on a small horizontally-laid-out reference table you add (e.g., a one-row-per-payment-method fee-tier lookup: UPI/Wallet/Card/Netbanking with their MDR-style fee percentages of your choosing, stated in the workbook).
+### Requirements File Structure
+* **Consolidated Root Requirements (`/requirements.txt`):** Recommended for single-environment execution covering all parts.
+* **Modular Requirements (Per Part):**
+  * `payments_fraud_analytics/requirements.txt`
+  * `credit_risk_lending_ml/requirements.txt`
+  * `wealth_advisory_crypto/requirements.txt`
 
-<span style="color: green;">
- Step 1: Build the Horizontal Fee Table - created sheet name fee_structure
- Step 2 created Table headers as UPI, Wallet, Card and Netbanking 
- Step 3 Defined MDR rates for respective payment methods as 0 %, 1.5%, 2%, 1.85.
- Step 4 Created two new column in transactions sheet - mdr_fee_pct and fee_amount_inr
- Step 5 Write the HLOOKUP formula as 
- for mdr+fee_pct as =IFERROR(HLOOKUP(F2, fee_structure!$A$1:$D$2, 2, FALSE), 0) and 
- for fee_amount_inr as =E2 * L2
- </span>
+### Installation
+```bash
+# Clone the repository
+git clone [https://github.com/error365/Massai-Capstone-Project---Paytm-FinTech-Analytics-AI-Platform.git](https://github.com/error365/Massai-Capstone-Project---Paytm-FinTech-Analytics-AI-Platform.git)
+cd Massai-Capstone-Project---Paytm-FinTech-Analytics-AI-Platform
 
 
-III. A nested IF/AND classification column labeling each transaction "High-Value Merchant Day" when a merchant's daily transaction total (via a pivot table) exceeds INR 5,000 and its region is not "East", using distinct, documented cutoffs if you choose a different rule — state your exact rule in the workbook.
-
-<span style="color: green;">
-Step 1 - In transaction sheet added one more column name - txn_date, added the formula to convert transaction time to a date =INT(D2) 
-Step 2 - format the Date (YYYY-MM-DD).
-Step 3 - Created the daily_merchant_totals Pivot Table
-Step 4 - Addd merchant_id and then txn_date as rows and amount_inr as value 
-Step 5 - added new column merchant_daily_total and added =SUMIFS(E:E, C:C, C2, N:N, N2) formula to pull each transaction's corresponding daily total for that merchant
-Step 6 - Wrote the Nested IF/AND Classification Formula - Rule Statement:
-
-    Rule: Label a transaction as "High-Value Merchant Day" if merchant_daily_total > 5000 AND region <> "East". Otherwise, label it "Standard".
-
-Step 7 - Added new column in transaction sheet as day_classification
-Step 8 - Use below formula to find Wheter the transaction is standard or High value merchant day
-=IF(AND(O2>5000, K2<>"East"), "High-Value Merchant Day", "Standard")
-</span>
+# Install dependencies via consolidated requirements file
+pip install -r requirements.txt
 
 
-IV. A pivot table summarizing total amount_inr and count of transactions by merchant_id and status, plus a count-vs-count-unique comparison (unique days transacted vs. total transaction count) for at least 5 merchants.
-
-<span style="color: green;">
-Step 1 - Select the transaction table and insert a new Pivot table and create a new sheet named merchant_pivot_summary
-Step 2 - add row as merchant_id
-Step 3 - add column as status
-Step 4 - add values as amount_inr, transaction_id
-Step 5 - created three column in this sheet as merchant_id, total_txn_count and unique_days_transacted 
-Step 5 - total_txn_count formula as =COUNTIF(transactions!$C:$C, K4) and unique days transacted as =COUNT(UNIQUE(FILTER(transactions!$N:$N, transactions!$C:$C=k4)))
-
-    you will observe that for active merchants, total_txn_count is greater than unique_days_transacted, indicating multiple transactions occurred on single calendar days
-</span>
 
 
-Part 2 — Credit Risk & Lending ML
-==================================
-Task 1: Exploratory Data Analysis (EDA) & is_thin_file Flag
+====================================================================
 
-Load Data: Read credit_applicants.csv into a Pandas DataFrame.Report Summary Metrics:Measured Default Rate: 20.25% (81 defaults out of 400 applicants), falling within the target 15–25% range.Missing Bureau Scores: 20.00% (80 out of 400 applicants) representing new-to-credit thin-file applicants.Engineer Flag: Create a binary flag column is_thin_file:$$\text{is\_thin\_file} = \begin{cases} 1 & \text{if } \text{credit\_bureau\_score} \text{ is missing} \\ 0 & \text{otherwise} \end{cases}$$Note: This flag relies purely on raw missingness status and is safe to construct prior to train/test splitting without risk of data leakage.
+How to Run End-to-End
 
-Task 2: Stratified Train/Test Split & Preprocessing Pipeline
+Part 1: Payment Fraud Analytics & Anomaly Detection
 
-Step 2.1 — Stratified Split & Justification  Split the dataset into 75% training ($N=300$) and 25% testing ($N=100$) using random_state=42 and stratify=y.  Stratification Justification: Because default events are imbalanced (20.25% defaults vs. 79.75% non-defaults), random splitting could cause class imbalance skew between train and test sets. Stratification guarantees both train and test splits retain the exact 20.25% target default ratio.  
+terminal
+cd payments_fraud_analytics
+py anomaly_detection.py
 
-Step 2.2 — Train-Only Median Imputation & JustificationCompute the median credit_bureau_score strictly on the training set: 612.00.Impute missing values in both X_train and X_test using 612.00.Alternate-Data Imputation Justification: Computing the median strictly from X_train prevents test-set target leakage. Combining this imputed median with is_thin_file = 1 allows alternate Paytm data signals (e.g., UPI inflow, transaction history) to drive risk evaluation for thin-file applicants while maintaining a baseline bureau score.
+Outputs: Evaluates Isolation Forest against seeded ground-truth anomalies (BTXNA), outputs recall metrics, and prints candidate default clusters via K-Means.
 
-Step 2.3 — Categorical EncodingApply One-Hot Encoding (pd.get_dummies) to employment_type with drop_first=True to avoid multicollinearity.Align train and test column structures to maintain feature parity across both sets.Step 
+Part 2: Credit Risk Lending ML Pipeline
 
-2.4 — StandardScaler FittingInitialize StandardScaler() and fit strictly on X_train.Transform both X_train and X_test using the training-fitted mean and variance parameters ($\mu_{train}, \sigma_{train}$).
+terminal
+cd credit_risk_lending_ml
+py credit_risk_pipeline.py
 
-Measured Default Rate: 20.25%
-Missing Bureau Scores: 20.00%
+Outputs: Fits Logistic Regression and Decision Tree models on credit applicant data, prints Accuracy, Precision, Recall, F1-Score, and ROC-AUC metrics, and outputs the baseline evaluation tables.
 
-Task 2 - Classification models
-Risk Tier,Probability Range (p^​),Applicant Count,Actual Defaults,Actual Default Rate (%),Illustrative Interest Rate
-Tier 1 (Low Risk),0.0049≤p^​≤0.0358,25,2,8.00%,12.0% – 14.0%
-Tier 2 (Medium Risk),0.0363≤p^​≤0.1461,25,3,12.00%,15.0% – 18.0%
-Tier 3 (High Risk),0.1506≤p^​≤0.3377,25,5,20.00%,19.0% – 24.0%
-Tier 4 (Very High Risk),0.3516≤p^​≤0.9469,25,10,40.00%,25.0% – 30.0%
+Part 3: Paytm Money Wealth Advisory & DCF Valuation
 
-Task 3 - Anomaly detection and optional segmentation
-Seeded Anomalies Total: 15
-Correctly Flagged Seeded Anomalies: 11
-Isolation Forest Recall: 73.33%
+terminal
+cd wealth_advisory_crypto
 
-K-Means Applicant Clusters (k=5):
-   cluster  applicant_count  defaults_count  default_rate_pct
-0        0               64               6              9.38
-1        1               73              24             32.88
-2        2              114              26             22.81
-3        3               86              10             11.63
-4        4               63              15             23.81
+#Default Graded Offline Baseline (Mock Mode)
+export MOCK_LLM=1
+py advisory_agent.py
+py extract_disclosure.py
+py dcf_calculator.py
+py debate.py
 
-Task 4 - Bias-Awareness Note & Governance Recommendation
-Even without explicit demographic fields like gender, age, or location in the dataset, features like employment_type, monthly_income_inr, and credit_bureau_score can act as indirect proxy variables for protected attributes in real-world deployments. Structural economic disparities mean self-employed, gig-economy, or informal workers—who are disproportionately women, youth, or rural residents—often show lower formal incomes and non-existent bureau records due to historical financial exclusion rather than poor creditworthiness. Heavy reliance on traditional bureau scores inherently penalizes "thin-file" applicants, perpetuating systemic barriers to credit access.
+# Design Decisions & Interpretations
 
-To mitigate proxy discrimination and algorithmic bias before going live, Paytm Postpaid should implement two key governance steps:
+# Part A: Payment Fraud & Behavioral Anomaly Detection
 
-Disparate Impact Audits: Conduct regular demographic parity and equal opportunity audits across income and employment strata to ensure approval ratios do not systematically disadvantage vulnerable groups.
+# Isolation Forest Scaling: Standardized numeric behavioral features (txn_hour, is_new_device, txn_amount_inr) and matched the model contamination parameter exactly to the ground-truth anomaly ratio ($15 / 265 \approx 5.66\\%$).
 
-Maker-Checker Human-in-the-Loop Review: Establish a human-in-the-loop review policy specifically for declined thin-file (is_thin_file = 1) applicants. Instead of automated rejections, flag border-case thin-file applicants for manual underwriter review. Underwriters can evaluate alternative data signals—such as Paytm UPI transaction regularity and wallet inflows—to grant fair access while maintaining sound risk management.
+# Recall Performance: Achieved 73.33% recall ($11/15$) against seeded ground-truth anomalies (BTXNA prefix).
 
-2. Final Model-Comparison Table & Deployment Recommendation
-Overall System Metric Summary
+# K-Means Segmentation: Identified optimal $k=2$ and $k=5$ cluster distributions via the Calinski-Harabasz index. Granular clustering ($k=5$) revealed an over-indexing default segment (32.88% default rate, $1.62\times$ baseline).
 
-Model / Sub-Task,Model Type,Accuracy,Precision,Recall,F1-Score,ROC-AUC / Recall
-Credit Default Model 1,Logistic Regression,83.00%,63.64%,35.00%,45.16%,0.719 (AUC)
-Credit Default Model 2,Decision Tree Classifier,70.00%,28.57%,30.00%,29.27%,0.519 (AUC)
-Fraud Anomaly Detection,Isolation Forest,—,—,73.33%,—,73.33% (Recall)
+# Part B: Credit Risk & Lending ML ModelingModel 
 
-Deployment Recommendation
-I recommend deploying Logistic Regression for Paytm Postpaid's primary default prediction pipeline over the Decision Tree Classifier. Logistic Regression demonstrates superior overall performance with higher Accuracy (83.00% vs. 70.00%), Precision (63.64% vs. 28.57%), F1-Score (45.16% vs. 29.27%), and ROC-AUC (0.719 vs. 0.519). Crucially, Logistic Regression outputs smooth, well-calibrated class probabilities that enable monotonic risk-based interest rate pricing tiers, whereas the unpruned Decision Tree overfits the training data and achieves near-random discrimination on test data. Coupled with the Isolation Forest model (which successfully catches 73.33% of behavioral fraud anomalies), this architecture provides a balanced, interpretable, and effective risk management system.
+# Selection: Logistic Regression significantly outperforms Decision Trees across all primary metrics:Accuracy: 83.00% vs 70.00%Precision: 63.64% vs 28.57%F1-Score: 45.16% vs 29.27%ROC-AUC: 0.719 vs 0.519
+
+# Governance & Proxy Bias: Addressed how employment_type, monthly_income_inr, and credit_bureau_score act as proxy variables for protected attributes (gender, age, location). Recommended Disparate Impact Audits and a Human-in-the-Loop (Maker-Checker) policy for declined thin-file applicants (is_thin_file=1).
+
+# Part C: Wealth Advisory, DCF Valuation & Crypto RiskPortfolio Advisory Agent: Built around the Think-Act-Observe pattern. Automatically flags and escalates high-risk portfolios ($\sigma_p > 20\\%$) to human advisors (triggered for Aggressive profiles: INV03, INV05 at 20.58% volatility).
+
+# DCF Valuation & Sensitivity: Evaluated FCFF (Base: ₹35.0 Cr) with a calculated WACC of 14.39% ($\beta = 1.55$). Verified the self-check constraint ($\text{WACC} - g \ge 1.0\\%$ spread in all 9 grid cells) with a worst-case spread of 8.39%. Calculated intrinsic EV at ₹523.16 Cr vs. ₹660.00 Cr under EV/EBITDA multiple ($12.0\times$).
+
+# Crypto Risk Appendix: Recommended 0% baseline allocation for retail Paytm Money portfolios due to zero intrinsic cash flow, fat-tail downside risks, and high tax drag (30% tax + 1% TDS). Addressed T.A.N.G. fraud vectors with bank-side real-time defenses.⚙️ Execution Mode & API Usage (MOCK_LLM)Default Mode (MOCK_LLM=1): Completely deterministic and offline. Uses rule engines and template generators for grading. No network calls or API keys required.
+
